@@ -12,10 +12,10 @@ load_dotenv()
 ## START: CONFIG - CHANGE THESE INPUTS ##
 
 PROPERTY_ID = os.getenv('PROPERTY_ID') ## update this to a string id (e.g., '1234567') or use a .env file if you want to publish this code to GitHub/elsewhere
-DIMENSION_LIST = ['landingPage', 'sessionDefaultChannelGroup'] # https://ga-dev-tools.google/ga4/dimensions-metrics-explorer/
+DIMENSION_LIST = ['landingPagePlusQueryString', 'sessionDefaultChannelGroup'] # https://ga-dev-tools.google/ga4/dimensions-metrics-explorer/
 METRIC_LIST = ['sessions'] # https://ga-dev-tools.google/ga4/dimensions-metrics-explorer/
-START_DATE = '2023-01-01'
-END_DATE = '2023-05-01'
+START_DATE = '2023-03-01'
+END_DATE = '2023-03-31'
 
 ## END: CONFIG ##
 
@@ -83,7 +83,7 @@ def transform_response(response):
     columns = dimension_names + metric_names
 
     df = pd.DataFrame(data, columns=columns)
-
+  
     return df
 
 
@@ -91,8 +91,24 @@ def main(job_object):
     credentials = get_credentials()
     response = get_report(job_object, credentials)
     df = transform_response(response)
+    
+    response_context = {
+        'dimension_headers': [header.name for header in response.dimension_headers],
+        'kind': response.kind,
+        'maximums': [metric.value for metric in response.maximums],
+        'metadata': response.metadata,
+        'metric_header': [header.name for header in response.metric_headers],
+        'minimums': [metric.value for metric in response.minimums],
+        'property_quota': response.property_quota,
+        'row_count': response.row_count,
+        'totals': [metric.value for metric in response.totals],
+        # 'rows': response.rows,
+    }
+    
+    print("Response keys available:", dir(response))
+    print('response_context:', response_context)
     print(df)    
-
+    
 
 if __name__ == '__main__':
     main(job_object=JOB_OBJECT)

@@ -3,3 +3,4 @@ local-api-testing/
 credentials/
 archive/
 .env
+data/
