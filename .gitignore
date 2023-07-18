@@ -1,0 +1,5 @@
+venv/
+local-api-testing/
+credentials/
+archive/
+.env
